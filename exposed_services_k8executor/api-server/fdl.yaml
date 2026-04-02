@@ -1,0 +1,46 @@
+functions:
+  oscar:
+    - oscar-cluster:
+        name: airflow-webserver
+        memory: 500Mi
+        cpu: '0.5'
+        image: localhost:5001/airflow-kube:latest
+        script: entrypoint.sh
+        environment:
+          Variables:
+            AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://airflow:airflow@airflow-postgres66-db:5432/airflow"
+            AIRFLOW__CORE__EXECUTOR: "KubernetesExecutor"
+            AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+
+            AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE: "oscar-svc"
+            AIRFLOW__KUBERNETES_EXECUTOR__POD_TEMPLATE_FILE: "/opt/airflow/pod_template.yaml"
+            AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_REPOSITORY: "localhost:5001/airflow-kube"
+            AIRFLOW__KUBERNETES_EXECUTOR__WORKER_CONTAINER_TAG: "latest" 
+            AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS: "True"
+            AIRFLOW__KUBERNETES_EXECUTOR__DELETE_WORKER_PODS_ON_FAILURE: "False"
+            AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-webserver-svc/execution/"
+
+            _AIRFLOW_DB_MIGRATE: "true"
+            AIRFLOW__API__BASE_URL: "http://localhost:8080/system/services/airflow-webserver/exposed/"
+            AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+            AIRFLOW__CORE__AUTH_MANAGER: "airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager"
+            AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "airflow:admin"
+
+            AIRFLOW__CORE__DAGS_FOLDER: "/mnt/airflow/dags"
+            AIRFLOW__CORE__FERNET_KEY: "oJ7Fz4Yk5pH3Yb6nP2Y9vKXQm3R8tU5wZc1dEfGhIjk="
+            AIRFLOW__LOGGING__BASE_LOG_FOLDER: "/mnt/airflow/logs"
+            AIRFLOW__API_AUTH__JWT_SECRET: "your-long-random-string-here2"
+            AIRFLOW__API__SECRET_KEY: "your-long-random-string-here2"
+
+            FORWARDED_ALLOW_IPS: "*" 
+
+        expose:
+          min_scale: 1
+          max_scale: 1
+          api_port: 8080
+          cpu_threshold: 90
+          rewrite_target: true
+          health_path: "/api/v2/monitor/health"
+        mount:
+          storage_provider: minio
+          path: airflow

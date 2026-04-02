@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "apache-airflow-providers-oscar"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "apache-airflow>=2.7.0",
+    "requests>=2.28.0",        # for OSCAR REST API calls
+]
+
+# This is how Airflow discovers your provider
+[project.entry-points."airflow.providers"]
+oscar = "airflow.providers.oscar"
+
+# This is how Airflow discovers your executor by short name
+[project.entry-points."airflow.executors"]
+OSCARExecutor = "airflow.providers.oscar.executors.oscar_executor:OSCARExecutor"
