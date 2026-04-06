@@ -338,18 +338,20 @@ Acceder a la interfaz web de Airflow a través del endpoint del API Server para 
 ├── airflow-local/
 │   └── airflow-oscar/          # Dockerfile e imagen del airflow-worker
 │       ├── Dockerfile
-│       ├── oscar_executor.py   # Implementación del OSCARExecutor
-│       └── script.sh           # Script de ejecución del worker
+│       └── oscar_executor.py   # Implementación del OSCARExecutor
 ├── metadatadb/                 # PostgreSQL (base de datos de metadatos)
 │   ├── Dockerfile              # Imagen pg-flask-sidecar
 │   ├── entrypoint.sh           # Inicialización de PostgreSQL y credenciales
 │   ├── service.yaml
+│   ├── app.py
 │   ├── secret.yaml
 │   └── service-k8s.yaml
-├── apiserver/                  # API Server de Airflow
+├── api-server/                  # API Server de Airflow
+│   ├── entrypoint.sh
 │   └── service.yaml
 ├── executor/                   # airflow-worker (servicio síncrono Knative)
 │   └── service.yaml
+│   └── entrypoint.sh 
 ├── scheduler/                  # Scheduler con OSCARExecutor
 │   ├── service.yaml
 │   └── entrypoint.sh
